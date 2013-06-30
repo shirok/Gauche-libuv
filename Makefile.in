@@ -40,15 +40,18 @@ GAUCHE_PKGARCHDIR = "$(DESTDIR)@GAUCHE_PKGARCHDIR@"
 
 all : $(TARGET)
 
-control--libuv.$(SOEXT): control--libuv.c libuv/libuv.a
+control--libuv.$(SOEXT): control--libuv.c libuv/libuv.a libuv/libuv.$(SOEXT)
 	$(GAUCHE_PACKAGE) compile \
-	  --local=$(LOCAL_PATHS) --ldflags="-L libuv" --libs="-luv" --output control--libuv.$(SOEXT) --verbose libuv control--libuv.c
+	  --local=$(LOCAL_PATHS) --cflags="-I libuv/include" --output control--libuv.$(SOEXT) --verbose libuv control--libuv.c `$(GOSH) ./extract-objs.scm`
 
 control--libuv.c control/libuv.sci: libuv.scm
 	$(GOSH) precomp --output control--libuv.$(SOEXT) --interface control/libuv.sci libuv.scm
 
 libuv/libuv.a:
 	cd libuv; make
+
+libuv/libuv.$(SOEXT):
+	cd libuv; make libuv.$(SOEXT)
 
 check : all
 	@rm -f test.log
