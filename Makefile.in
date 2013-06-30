@@ -42,10 +42,10 @@ all : $(TARGET)
 
 control--libuv.$(SOEXT): control--libuv.c libuv/libuv.a libuv/libuv.$(SOEXT)
 	$(GAUCHE_PACKAGE) compile \
-	  --local=$(LOCAL_PATHS) --cflags="-I libuv/include" --output control--libuv.$(SOEXT) --verbose libuv control--libuv.c `$(GOSH) ./extract-objs.scm`
+	  --local=$(LOCAL_PATHS) --cflags="-I libuv/include" --libs="-lm -ldl -lrt" --output control--libuv.$(SOEXT) --verbose libuv control--libuv.c `$(GOSH) ./extract-objs.scm`
 
 control--libuv.c control/libuv.sci: libuv.scm
-	$(GOSH) precomp --output control--libuv.$(SOEXT) --interface control/libuv.sci libuv.scm
+	$(GOSH) precomp --dso-name control--libuv.$(SOEXT) --output control--libuv.c --interface control/libuv.sci libuv.scm
 
 libuv/libuv.a:
 	cd libuv; make
